@@ -12,6 +12,8 @@ class SortedTableMap(MapBase):
             yield item._key, item._value
 
     def _find_index(self, k):
+        # helper function
+        # returns the index where a key-value pair should be located
         def _find_index_inner(k, low, high):
             if high < low:
                 # print("len:{0}, low:{1}, high:{2}".format(len(self), low, high))
