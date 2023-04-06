@@ -57,15 +57,16 @@ class FlightQuery(SortedTableMap):
             k2_key = self.Key(k2[0], k2[1], k2[2], k2[3])
 
             for key, value in a:
-                if key._date == k1_key._date and key._time == k1_key._time:
-                    print(key._origin, key._dest, key._date, key._time, value)
-                elif key._date == k2_key._date and key._time == k2_key._time:
-                    print(key._origin, key._dest, key._date, key._time, value)
-                elif key._date > k1_key._date and key._date < k2_key._date:
-                    print(self.find_gt(key)[0]._origin, self.find_gt(key)[0]._dest, self.find_gt(key)[0]._date, self.find_gt(key)[0]._time, self.find_gt(key)[1])
+                if (key._date == k1_key._date and key._time == k1_key._time) or \
+                    (key._date == k2_key._date and key._time == k2_key._time) or \
+                    (key._date == k1_key._date and key._time > k1_key._time) or \
+                    (key._date > k1_key._date and key._date < k2_key._date) or \
+                    (key._date == k2_key._date and key._time < k2_key._time):
+                        print(key._origin, key._dest, key._date, key._time, value)
+                
 
 a = FlightQuery()
-s = [("A", "B", 622, 1200, "No1"), ("A", "B", 622, 1330, "No2"), ("A", "B", 622, 1300, "No3"), ("A", "B", 522, 1300, "No4")]
+s = [("A", "B", 622, 1200, "No1"), ("A", "B", 622, 1330, "No2"), ("A", "B", 622, 1300, "No3"), ("A", "B", 722, 1300, "No4"), ("A", "B", 922, 1500, "No5"), ("A", "B", 322, 1200, "No6")]
 for each in s:
     key = a.Key(each[0], each[1], each[2], each[3])
     value = each[4]
@@ -82,8 +83,8 @@ print("\n")
 
 
 # Query
-k1 = ("A", "B", 622, 1200)
-k2 = ("A", "B", 622, 1330)
+k1 = ("A", "B", 822, 1200)
+k2 = ("A", "B", 722, 1430)
 
 print("Input", "\n")
 print("Earliest date:", k1[2])
