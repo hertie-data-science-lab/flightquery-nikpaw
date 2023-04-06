@@ -24,12 +24,10 @@ class FlightQuery(SortedTableMap):
                 return False
 
         def __le__(self, other):
-            try:
-                self_index = self._find_index(self)
-                other_index = self._find_index(other)
-                return self_index <= other_index
-            except ValueError:
-                return NotImplemented
+            if self == other:
+                return True
+            else:
+                return self.__lt__(other)
 
         def __gt__(self, other):
             if self._origin > other._origin:
@@ -50,23 +48,40 @@ class FlightQuery(SortedTableMap):
                 return self.__gt__(other)
 
     def query(self, k1, k2):
-        if k1[0] is not k2[0] or k1[1] is not k2[1]:
-            raise KeyError("The origin or the destination are not the same")
-        else:
-            k1_key = self.Key(k1[0], k1[1], k1[2], k1[3])
-            k2_key = self.Key(k2[0], k2[1], k2[2], k2[3])
+        k1_key = self.Key(k1[0], k1[1], k1[2], k1[3])
+        k2_key = self.Key(k2[0], k2[1], k2[2], k2[3])
+        
+        flight_from_origin = 0
+        flight_to_destination = 0
+        possible_origins = []
+        possible_destinations = []
 
+        for key, value in a:
+            if key._origin == k1_key._origin:
+                flight_from_origin += 1
+            if key._dest == k1_key._dest:
+                flight_to_destination += 1
+            if key._origin not in possible_origins:
+                possible_origins.append(key._origin)
+            if key._dest not in possible_destinations:
+                possible_destinations.append(key._dest)
+
+        if flight_from_origin == 0:
+            print("\n", "No flight from this origin. Please enter a new destination from the following options: ", possible_origins)
+        if flight_to_destination == 0:
+            print("\n", "No flight to this destination. Please enter a new destination from the following options: ", possible_destinations)
+        else:
+            print("\n", "Possible Flights:", "\n")
             for key, value in a:
                 if (key._date == k1_key._date and key._time == k1_key._time) or \
                     (key._date == k2_key._date and key._time == k2_key._time) or \
                     (key._date == k1_key._date and key._time > k1_key._time) or \
                     (key._date > k1_key._date and key._date < k2_key._date) or \
                     (key._date == k2_key._date and key._time < k2_key._time):
-                        print(key._origin, key._dest, key._date, key._time, value)
-                
+                        print("Flight", value, "from", key._origin, "to", key._dest, "on", key._date, "at", key._time)
 
 a = FlightQuery()
-s = [("A", "B", 622, 1200, "No1"), ("A", "B", 622, 1330, "No2"), ("A", "B", 622, 1300, "No3"), ("A", "B", 722, 1300, "No4"), ("A", "B", 922, 1500, "No5"), ("A", "B", 322, 1200, "No6")]
+s = [("C", "B", 622, 1200, "No1"), ("A", "B", 622, 1330, "No2"), ("A", "B", 622, 1300, "No3"), ("A", "B", 623, 1300, "No4"), ("A", "B", 621, 1500, "No5"), ("A", "B", 625, 1200, "No6")]
 for each in s:
     key = a.Key(each[0], each[1], each[2], each[3])
     value = each[4]
@@ -82,17 +97,19 @@ for key, value in a:
 print("\n")
 
 
-# Query
-k1 = ("A", "B", 822, 1200)
-k2 = ("A", "B", 722, 1430)
+# Query Input
+print("Welcome to FlightQuery!:) \n Please start you query. \n")
+origin = input("Flight Origin: ")
+destination = input("Flight Destination: ")
+earliest_date = int(input("Earliest Date: "))
+earliest_time = int(input("Earliest Time: "))
+latest_date = int(input("Latest Date: "))
+latest_time = int(input("Latest time: "))
 
-print("Input", "\n")
-print("Earliest date:", k1[2])
-print("Earliest time:", k1[3])
-print("Latest date:", k2[2])
-print("Latest time:", k2[3], "\n")
+k1 = (origin, destination, earliest_date, earliest_time)
+k2 = (origin, destination, latest_date, latest_time)
 
-print("Possible Flights:", "\n")
+# Query Output
 a.query(k1, k2)
 
 
